@@ -105,10 +105,14 @@ class LearningAgent(Agent):
         # When not learning, choose a random action
         # When learning, choose a random action with 'epsilon' probability
         #   Otherwise, choose an action with the highest Q-value for the current state
-        if self.epsilon > random.random():
+        if self.learning is False:
+            print "You are not learning..."
             action = random.choice(self.valid_actions)
         else:
-            action = self.get_maxQ(state)
+            if self.epsilon > random.random():
+                action = random.choice(self.valid_actions)
+            else:
+                action = self.get_maxQ(state)
 
         return action
 
@@ -151,8 +155,8 @@ def run():
     #   verbose     - set to True to display additional output from the simulation
     #   num_dummies - discrete number of dummy agents in the environment, default is 100
     #   grid_size   - discrete number of intersections (columns, rows), default is (8, 6)
-    #env = Environment()
-    env = Environment(verbose = True)
+    env = Environment()
+    #env = Environment(verbose = True)
     ##############
     # Create the driving agent
     # Flags:
@@ -160,7 +164,8 @@ def run():
     #    * epsilon - continuous value for the exploration factor, default is 1
     #    * alpha   - continuous value for the learning rate, default is 0.5
     #agent = env.create_agent(LearningAgent)
-    agent = env.create_agent(LearningAgent, learning = True)
+    #agent = env.create_agent(LearningAgent, learning = True)
+    agent = env.create_agent(LearningAgent)
     ##############
     # Follow the driving agent
     # Flags:
@@ -182,7 +187,7 @@ def run():
     #   tolerance  - epsilon tolerance before beginning testing, default is 0.05 
     #   n_test     - discrete number of testing trials to perform, default is 0
     #sim.run()
-    sim.run(n_test = 4)
+    sim.run(n_test = 10)
 
 if __name__ == '__main__':
     run()
