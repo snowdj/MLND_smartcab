@@ -8,7 +8,7 @@ class LearningAgent(Agent):
     """ An agent that learns to drive in the Smartcab world.
         This is the object you will be modifying. """ 
 
-    def __init__(self, env, learning=False, epsilon=0.5, alpha=0.5):
+    def __init__(self, env, learning=False, epsilon=1.0, alpha=0.5):
         super(LearningAgent, self).__init__(env)     # Set the agent in the evironment 
         self.planner = RoutePlanner(self.env, self)  # Create a route planner
         self.valid_actions = self.env.valid_actions  # The set of valid actions
@@ -23,7 +23,6 @@ class LearningAgent(Agent):
         ## TO DO ##
         ###########
         # Set any additional class parameters as needed
-        #self.action_list = [None, 'left', 'right', 'forward']
 
 
     def reset(self, destination=None, testing=False):
@@ -40,7 +39,11 @@ class LearningAgent(Agent):
         # Update epsilon using a decay function of your choice
         # Update additional class parameters as needed
         # If 'testing' is True, set epsilon and alpha to 0
-
+        if testing:
+            self.epsilon = 0.0
+            self.alpha = 0.0
+        else:
+            self.epsilon = self.epsilon  - 0.05
         return None
 
     def build_state(self):
@@ -60,6 +63,9 @@ class LearningAgent(Agent):
         #state = None
         state = (waypoint, inputs['light'], inputs['left'], inputs['oncoming'])
 
+        #print "This is your building state..."
+        #print state
+
         return state
 
 
@@ -72,8 +78,14 @@ class LearningAgent(Agent):
         ###########
         # Calculate the maximum Q-value of all actions for a given state
 
-        maxQ = None
+        # Find the action (key) with maximum Q-value!
+        #maxQ = None
+        state_dict= self.Q[state]
 
+        #print "The key will be", max(state_dict, key=state_dict.get)
+        #print "The value will be", max(state_dict.values())
+
+        maxQ = max(state_dict, key=state_dict.get)
         return maxQ 
 
 
@@ -86,7 +98,14 @@ class LearningAgent(Agent):
         # When learning, check if the 'state' is not in the Q-table
         # If it is not, create a new dictionary for that state
         #   Then, for each action available, set the initial Q-value to 0.0
+        if self.learning:
+            if state in self.Q:
+                pass
+            else:
+                self.Q[state] = {None: 0.0, 'forward': 0.0, 'left': 0.0, 'right': 0.0}
 
+        #print "This is your self.Q ", self.Q
+        #print "This is your self.Q at state ", self.Q[state]
         return
 
 
@@ -97,7 +116,7 @@ class LearningAgent(Agent):
         # Set the agent state and default action
         self.state = state
         self.next_waypoint = self.planner.next_waypoint()
-        action = None
+        #action = None
 
         ########### 
         ## TO DO ##
@@ -128,7 +147,10 @@ class LearningAgent(Agent):
         ###########
         # When learning, implement the value iteration update rule
         #   Use only the learning rate 'alpha' (do not use the discount factor 'gamma')
+        if self.learning:
+            self.Q[state][action] = self.Q[state][action] + self.alpha * (reward - self.Q[state][action])
 
+        #print self.Q[state][action]
         return
 
 
@@ -156,17 +178,17 @@ def run():
     #   verbose     - set to True to display additional output from the simulation
     #   num_dummies - discrete number of dummy agents in the environment, default is 100
     #   grid_size   - discrete number of intersections (columns, rows), default is (8, 6)
-    env = Environment()
-    #env = Environment(verbose = True)
+    #env = Environment()
+    env = Environment(verbose = True)
     ##############
     # Create the driving agent
     # Flags:
     #   learning   - set to True to force the driving agent to use Q-learning
     #    * epsilon - continuous value for the exploration factor, default is 1
     #    * alpha   - continuous value for the learning rate, default is 0.5
+
     #agent = env.create_agent(LearningAgent)
-    #agent = env.create_agent(LearningAgent, learning = True)
-    agent = env.create_agent(LearningAgent)
+    agent = env.create_agent(LearningAgent, learning = True)
     ##############
     # Follow the driving agent
     # Flags:
@@ -181,7 +203,7 @@ def run():
     #   log_metrics  - set to True to log trial and simulation results to /logs
     #   optimized    - set to True to change the default log file name
     #sim = Simulator(env)
-    sim = Simulator(env, update_delay = 0.1, log_metrics = True)
+    sim = Simulator(env, update_delay = 0.01, log_metrics = True)
     ##############
     # Run the simulator
     # Flags:
