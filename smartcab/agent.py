@@ -8,7 +8,7 @@ class LearningAgent(Agent):
     """ An agent that learns to drive in the Smartcab world.
         This is the object you will be modifying. """ 
 
-    def __init__(self, env, learning=False, epsilon=1.0, alpha=0.5):
+    def __init__(self, env, learning=False, epsilon=1.0, alpha=0.99):
         super(LearningAgent, self).__init__(env)     # Set the agent in the evironment 
         self.planner = RoutePlanner(self.env, self)  # Create a route planner
         self.valid_actions = self.env.valid_actions  # The set of valid actions
@@ -23,6 +23,7 @@ class LearningAgent(Agent):
         ## TO DO ##
         ###########
         # Set any additional class parameters as needed
+        self.count_trail_number = 1;
 
 
     def reset(self, destination=None, testing=False):
@@ -43,7 +44,28 @@ class LearningAgent(Agent):
             self.epsilon = 0.0
             self.alpha = 0.0
         else:
-            self.epsilon = self.epsilon  - 0.05
+            ### First decaying function
+            ###self.epsilon = 1.0 - 0.05 * self.count_trail_number
+
+            ### Second decaying function
+            ###a = 0.99
+            ###self.epsilon = math.pow(a, self.count_trail_number)
+
+
+            ### Third decaying function
+            ###self.epsilon = 1./ self.count_trail_number ** 2
+
+            ### Fourth decaying function
+            a = 0.10
+            self.epsilon = math.exp(-1.0*a*self.count_trail_number)
+
+            ### Fifth decaying function
+            ###a = 0.9
+            ###self.epsilon = math.cos(a*self.count_trail_number)
+
+
+            self.count_trail_number = self.count_trail_number + 1
+            print "Your epsilon is {:4.2f} at step {:s}.".format(self.epsilon, str(self.count_trail_number))
         return None
 
     def build_state(self):
@@ -61,6 +83,7 @@ class LearningAgent(Agent):
         ###########
         # Set 'state' as a tuple of relevant data for the agent        
         #state = None
+        #state = (inputs['light'], inputs['left'], inputs['oncoming'])
         state = (waypoint, inputs['light'], inputs['left'], inputs['oncoming'])
 
         #print "This is your building state..."
@@ -203,7 +226,7 @@ def run():
     #   log_metrics  - set to True to log trial and simulation results to /logs
     #   optimized    - set to True to change the default log file name
     #sim = Simulator(env)
-    sim = Simulator(env, update_delay = 0.01, log_metrics = True)
+    sim = Simulator(env, update_delay = 0.01, log_metrics = True, optimized = True)
     ##############
     # Run the simulator
     # Flags:
