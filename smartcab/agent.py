@@ -169,12 +169,12 @@ class LearningAgent(Agent):
                     if self.Q[state][action] == self.get_maxQ(state)])
 
                 # The other option 
-                maxQ_value = self.get_maxQ(state)
-                possible_move = []
-                for key, value in self.Q[state].items():
-                    if  value == maxQ_value:
-                        possible_move.append(key)
-                action = random.choice(possible_move)
+                # maxQ_value = self.get_maxQ(state)
+                # possible_move = []
+                # for key, value in self.Q[state].items():
+                #     if  value == maxQ_value:
+                #         possible_move.append(key)
+                # action = random.choice(possible_move)
 
 
                 #print self.Q[state]
@@ -258,7 +258,7 @@ def run():
     #   tolerance  - epsilon tolerance before beginning testing, default is 0.05 
     #   n_test     - discrete number of testing trials to perform, default is 0
     #sim.run()
-    sim.run(n_test = 10)
+    sim.run(n_test = 50)
 
 if __name__ == '__main__':
     run()
