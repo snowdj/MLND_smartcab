@@ -55,19 +55,19 @@ class LearningAgent(Agent):
             ### Third decaying function
             ###self.epsilon = 1./ self.count_trail_number ** 2
 
-            ### Fourth decaying function
-            #a = 0.10
-            #self.epsilon = math.exp(-1.0*a*self.count_trail_number)
+            # ### Fourth decaying function
+            # a = 0.02
+            # self.epsilon = math.exp(-1.0*a*self.count_trail_number)
 
             ### Fifth decaying function
             ###a = 0.9
             ###self.epsilon = math.cos(a*self.count_trail_number)
 
 
-            ### Gompertz function
+            ## Gompertz function
             a = 1.0
             b = 0.0001
-            c = 0.125
+            c = 0.03125
             self.epsilon = a*math.exp(-b*math.exp(self.count_trail_number*c))            
 
 
@@ -168,7 +168,7 @@ class LearningAgent(Agent):
                 action = random.choice([action for action in self.valid_actions \
                     if self.Q[state][action] == self.get_maxQ(state)])
 
-                # The other option 
+                ### The other option 
                 # maxQ_value = self.get_maxQ(state)
                 # possible_move = []
                 # for key, value in self.Q[state].items():
